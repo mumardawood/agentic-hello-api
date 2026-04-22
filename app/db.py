@@ -31,9 +31,9 @@ class Message(SQLModel, table=True):
 url_object = URL.create(
     "postgresql+psycopg",
     username="postgres",
-    password="kx@jj5/g",  # plain (unescaped) text
+    password="1234",  # plain (unescaped) text
     host="localhost",
-    database="test_db",
+    database="Agentic_Hello_API",
 )
 
 engine = create_engine(url_object)
