@@ -1,14 +1,16 @@
-"""db.py - Database setup + tables. That's it."""
+"""Database setup and table definitions."""
 
 from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Depends
-from sqlmodel import Field, SQLModel, Session, Relationship, create_engine
-from sqlalchemy import URL
+from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
+
+from .config import get_settings
 
 
-# --- Tables --- 
+settings = get_settings()
+
 class Conversation(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     title: str = "New chat"
@@ -18,14 +20,16 @@ class Conversation(SQLModel, table=True):
 
 class Message(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    conversation_id: int = Field(foreign_key="conversation.id")
-    role: str       # "user" or "assistant"
+    conversation_id: int = Field(foreign_key="conversation.id", index=True)
+    role: str
     content: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     conversation: Conversation | None = Relationship(back_populates="messages")
 
 
-# --- Engine + Session ---
+# connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
 
+<<<<<<< HEAD
 # engine = create_engine("sqlite:///chats.db", connect_args={"check_same_thread": False})
 
 url_object = URL.create(
@@ -34,12 +38,16 @@ url_object = URL.create(
     password="1234",  # plain (unescaped) text
     host="localhost",
     database="Agentic_Hello_API",
+=======
+engine = create_engine(
+    settings.database_url,
+    # connect_args=connect_args,
+    # pool_pre_ping=True,
+>>>>>>> 8f59a420d0be5cd79b20e564fb3e91a80ab20c97
 )
 
-engine = create_engine(url_object)
 
-
-def init_db():
+def init_db() -> None:
     SQLModel.metadata.create_all(engine)
 
 

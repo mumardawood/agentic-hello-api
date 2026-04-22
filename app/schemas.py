@@ -1,19 +1,23 @@
-"""
-schemas.py - Define what data goes IN and OUT of our API.
+"""Request and response schemas for the API."""
 
-Pydantic models validate incoming data automatically.
-If someone sends bad data, FastAPI returns a clear error.
-"""
+from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-# What the client sends TO our API
 class ChatIn(BaseModel):
-    message: str            # The user's message, e.g. "Hi, my name is Rizwan"
+    message: str = Field(..., min_length=1, max_length=4000)
 
 
-# What our API sends BACK
 class ChatOut(BaseModel):
-    reply: str              # The agent's response
+    reply: str
     conversation_id: int
+
+
+class ConversationOut(BaseModel):
+    id: int
+    title: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
